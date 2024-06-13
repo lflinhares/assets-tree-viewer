@@ -1,18 +1,18 @@
 import { Children, useEffect, useMemo, useState } from "react";
 import { useRequest } from "./useRequest";
 
-interface Company {
+export interface Company {
   id: string;
   name: string;
 }
 
-interface Location {
+export interface Location {
   id: string;
   name: string;
   parentId: string | null;
 }
 
-interface Asset {
+export interface Asset {
   id: string;
   name: string;
   parentId?: string | null;
@@ -104,11 +104,22 @@ export function useTree() {
     });
   }, [loading]);
 
-  console.log(tree);
-
   useEffect(() => {
     requestCompanies("https://fake-api.tractian.com/companies");
   }, []);
+
+  function recursiveAssetsChildren(assets: Asset[], parent: Asset) {
+    return assets.reduce((acc: any, asset) => {
+      if (asset.id && asset.parentId === parent.id) {
+        acc.push({
+          ...asset,
+          type: asset.sensorType ? "component" : "asset",
+          children: recursiveAssetsChildren(assets, asset),
+        });
+      }
+      return acc;
+    }, []);
+  }
 
   function organizeAssets(assets: Asset[]): Record<string, Asset[] | Asset> {
     const organizedAssets = assets.reduce((acc: any, asset) => {
@@ -116,31 +127,12 @@ export function useTree() {
         if (!acc["none"]) {
           acc["none"] = [];
         }
-        console.log("component", asset);
         acc["none"] = [
           ...acc["none"],
           {
             ...asset,
-            type: "component",
-            children: assets.reduce((acc: any, subAsset) => {
-              if (subAsset.parentId === asset.id) {
-                acc.push({
-                  ...subAsset,
-                  type: asset.sensorType ? "component" : "asset",
-
-                  children: assets.reduce((acc: any, component) => {
-                    if (component.parentId === subAsset.id) {
-                      acc.push({
-                        ...component,
-                        type: asset.sensorType ? "component" : "asset",
-                      });
-                    }
-                    return acc;
-                  }, []),
-                });
-              }
-              return acc;
-            }, []),
+            type: asset.sensorType ? "component" : "asset",
+            children: recursiveAssetsChildren(assets, asset),
           },
         ];
       }
@@ -155,25 +147,7 @@ export function useTree() {
           {
             ...asset,
             type: asset.sensorType ? "component" : "asset",
-            children: assets.reduce((acc: any, subAsset) => {
-              if (subAsset.parentId === asset.id) {
-                acc.push({
-                  ...subAsset,
-                  type: asset.sensorType ? "component" : "asset",
-
-                  children: assets.reduce((acc: any, component) => {
-                    if (component.parentId === subAsset.id) {
-                      acc.push({
-                        ...component,
-                        type: asset.sensorType ? "component" : "asset",
-                      });
-                    }
-                    return acc;
-                  }, []),
-                });
-              }
-              return acc;
-            }, []),
+            children: recursiveAssetsChildren(assets, asset),
           },
         ];
       }
