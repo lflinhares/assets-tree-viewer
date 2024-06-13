@@ -1,32 +1,8 @@
 import { Children, useEffect, useMemo, useState } from "react";
 import { useRequest } from "./useRequest";
+import { Asset, Company, Location } from "../types";
 
-export interface Company {
-  id: string;
-  name: string;
-}
-
-export interface Location {
-  id: string;
-  name: string;
-  parentId: string | null;
-}
-
-export interface Asset {
-  id: string;
-  name: string;
-  parentId?: string | null;
-  locationId?: string | null;
-  sensorType?: string;
-  sensorId?: string;
-  status?: string;
-  gatewayId?: string;
-}
-
-export function useTree() {
-  const { data: companies, request: requestCompanies } =
-    useRequest<Company[]>();
-
+export function useTree({ companies }: { companies: Company[] | undefined }) {
   const { request: requestLocations } = useRequest<Location[]>();
 
   const { request: requestAssets } = useRequest<Asset[]>();
@@ -74,7 +50,7 @@ export function useTree() {
       return [];
     }
 
-    return companies.map((company) => {
+    return companies.reduce((acc: any, company: any) => {
       const companyLocations = locations[company.id];
 
       const tree = companyLocations?.reduce((acc: any, location) => {
@@ -97,16 +73,14 @@ export function useTree() {
         return acc;
       }, []);
 
-      return {
+      acc[company.id] = {
         ...company,
         children: [...tree, ...((assets[company.id]["none"] as Asset[]) || [])],
       };
-    });
-  }, [loading]);
 
-  useEffect(() => {
-    requestCompanies("https://fake-api.tractian.com/companies");
-  }, []);
+      return acc;
+    }, {});
+  }, [loading]);
 
   function recursiveAssetsChildren(assets: Asset[], parent: Asset) {
     return assets.reduce((acc: any, asset) => {
