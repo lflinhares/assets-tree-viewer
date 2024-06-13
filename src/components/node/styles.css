@@ -1,0 +1,49 @@
+.node-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.close-node {
+  height: 0px;
+  overflow: hidden;
+}
+
+.company {
+}
+
+.node-element {
+  box-sizing: border-box;
+  position: relative;
+  margin: 10px 0 5px 0;
+  padding: 0 0 5px 10px;
+  width: fit-content;
+}
+
+.node-container {
+  box-sizing: border-box;
+
+  position: relative;
+  border-left: 1px solid rgb(180, 180, 180);
+  border-bottom: 1px solid rgb(180, 180, 180);
+  margin: 10px 0 5px 0;
+  padding: 0 0 5px 10px;
+  width: fit-content;
+}
+
+.toggle {
+  position: absolute;
+  left: -10px;
+  top: 0;
+
+  background-color: white;
+  border: none;
+  outline: 0;
+}

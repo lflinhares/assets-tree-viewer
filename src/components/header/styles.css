@@ -1,0 +1,45 @@
+header {
+  background-color: #17192d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+header > img {
+  width: 103px;
+  height: 14px;
+}
+
+.units-buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.unit-button {
+  padding: 0 8px;
+  display: flex;
+  border-radius: 2px;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  background-color: #023b78;
+  height: 24px;
+  color: white;
+  border: none;
+  outline: 0;
+}
+
+.selected-unit {
+  background-color: #2188ff;
+  height: 24px;
+  color: white;
+}
+
+.unit-button img {
+  width: 14px;
+  height: 14px;
+}
