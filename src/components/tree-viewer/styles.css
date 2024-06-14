@@ -1,7 +1,8 @@
 .tree-container {
   border: 1px solid #d8dfe6;
   border-radius: 2px;
-  margin: 20px;
+
   padding: 20px;
   width: 500px;
+  background-color: white;
 }

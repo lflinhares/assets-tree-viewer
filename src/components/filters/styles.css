@@ -1,0 +1,28 @@
+.filters {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.filter-button {
+  background-color: white;
+  border: 1px solid #d8dfe6;
+  padding: 6px 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.filter-active {
+  background-color: #2188ff;
+  border: 1px solid#2188FF;
+  padding: 6px 16px;
+  color: white;
+}
+
+.filter-active img {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(5%) saturate(20%)
+    hue-rotate(187deg) brightness(108%) contrast(105%);
+}

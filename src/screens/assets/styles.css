@@ -1,0 +1,21 @@
+.title-container {
+  display: flex;
+  padding: 0 0 20px 0;
+  gap: 5px;
+  align-items: center;
+}
+
+.title {
+  font-size: 20px;
+  height: 100%;
+  color: #24292f;
+  display: block;
+}
+
+.unit-name {
+  font-size: 14px;
+  height: 100%;
+  color: #77818c;
+  display: block;
+  margin-top: 4px;
+}

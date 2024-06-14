@@ -1,14 +1,15 @@
 import "./App.css";
 import Header from "./components/header";
-import TreeViewer from "./components/tree-viewer";
 
 import { UnitProvider } from "./contexts/unitContext";
+import Assets from "./screens/assets";
 
 function App() {
   return (
     <UnitProvider>
       <Header />
-      <TreeViewer />
+
+      <Assets />
     </UnitProvider>
   );
 }
