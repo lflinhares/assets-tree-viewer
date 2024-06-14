@@ -13,7 +13,8 @@ export type NodeProps = {
   Location;
 
 function Node({ children, name, type, status }: NodeProps) {
-  const [close, setClose] = useState(false);
+  const [close, setClose] = useState(true);
+  const [initClosed, setInitClosed] = useState(true);
 
   const nodeIcon = useCallback((type: NodeProps["type"]) => {
     switch (type) {
@@ -28,22 +29,25 @@ function Node({ children, name, type, status }: NodeProps) {
     }
   }, []);
 
-  const recursiveRendering = useCallback((node: any) => {
-    if (node.children.length > 0) {
-      return node.children.map((child: any) => {
-        return (
-          <Node
-            {...child}
-            id={child.id}
-            type={child.type}
-            key={child.id}
-            name={child.name}
-            children={child.children}
-          />
-        );
-      });
-    }
-  }, []);
+  const recursiveRendering = useCallback(
+    (node: any) => {
+      if (node.children.length > 0 && !initClosed) {
+        return node.children.map((child: any) => {
+          return (
+            <Node
+              {...child}
+              id={child.id}
+              type={child.type}
+              key={child.id}
+              name={child.name}
+              children={child.children}
+            />
+          );
+        });
+      }
+    },
+    [initClosed]
+  );
 
   const hasChildren = useMemo(() => {
     return children.length > 0;
@@ -56,6 +60,7 @@ function Node({ children, name, type, status }: NodeProps) {
           <button
             className="toggle"
             onClick={() => {
+              setInitClosed(false);
               setClose((close) => !close);
             }}
           >
