@@ -20,7 +20,7 @@ export type NodeProps = {
   Company &
   Location;
 
-function Node({ children, name, type, status }: NodeProps) {
+function Node({ children, name, type, status, id }: NodeProps) {
   const { search } = useContext(UnitContext);
   const [close, setClose] = useState(true);
   const [initClosed, setInitClosed] = useState(true);
@@ -76,9 +76,15 @@ function Node({ children, name, type, status }: NodeProps) {
 
   return (
     <div className={hasChildren ? "node-container" : "node-element"}>
-      <div className="node-header">
+      <label
+        className={`node-header ${
+          hasChildren ? "node-header-clickable" : ""
+        } ${type}`}
+        htmlFor={id}
+      >
         {hasChildren && (
           <button
+            id={id}
             className="toggle"
             onClick={() => {
               if (initClosed) {
@@ -96,13 +102,13 @@ function Node({ children, name, type, status }: NodeProps) {
           <img className="icon" src={nodeIcon(type)} alt={type} />
         )}
 
-        <span className={type}>
+        <div className={`${hasChildren ? "node-name-clickable" : ""} ${type}`}>
           {name}{" "}
           {type === "component" && (
             <span className={`status-icon ${status}`}> </span>
           )}
-        </span>
-      </div>
+        </div>
+      </label>
       {hasChildren && (
         <div
           className={close ? "close-node" : ""}
