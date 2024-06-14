@@ -2,11 +2,10 @@ import React, { useContext } from "react";
 import Node, { NodeProps } from "../node";
 import { UnitContext } from "../../contexts/unitContext";
 import "./styles.css";
-import { useSearch } from "../../hooks/useSearch";
 import Input from "../input";
 
 const TreeViewer: React.FC = () => {
-  const { tree, setSearch, setProperty } = useContext(UnitContext);
+  const { search, tree, setSearch, setProperty } = useContext(UnitContext);
 
   return (
     <div className="tree-container">
@@ -31,12 +30,14 @@ const TreeViewer: React.FC = () => {
         );
       })}
 
-      {tree.length === 0 && (
-        <span className="no-results">
-          {" "}
-          A busca não gerou nenhum resultado.{" "}
-        </span>
-      )}
+      {tree.length === 0 &&
+        (search ? (
+          <span className="no-results">
+            A busca não gerou nenhum resultado.
+          </span>
+        ) : (
+          <span className="no-results"> Carregando... </span>
+        ))}
 
       {/*   {tree?.[unit.id]?.children.map((node: any) => {
         return (
