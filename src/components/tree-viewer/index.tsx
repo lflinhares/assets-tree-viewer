@@ -6,22 +6,18 @@ import { useSearch } from "../../hooks/useSearch";
 import Input from "../input";
 
 const TreeViewer: React.FC = () => {
-  const { tree, unit } = useContext(UnitContext);
-
-  const { filteredTree, setProperty, setSearch } = useSearch({
-    tree: tree?.[unit.id],
-  });
+  const { tree, setSearch, setProperty } = useContext(UnitContext);
 
   return (
     <div className="tree-container">
       <Input
         onChange={(value) => {
+          setProperty("name");
           setSearch(value);
         }}
         icon
       />
-
-      {filteredTree?.map((node: any) => {
+      {tree?.map((node: any) => {
         return (
           <Node
             id={node.id}
@@ -33,8 +29,7 @@ const TreeViewer: React.FC = () => {
         );
       })}
 
-      {/* 
-      {tree?.[unit.id]?.children.map((node: any) => {
+      {/*   {tree?.[unit.id]?.children.map((node: any) => {
         return (
           <Node
             id={node.id}

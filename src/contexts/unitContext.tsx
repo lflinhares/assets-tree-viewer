@@ -1,13 +1,23 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useEffect,
+  useState,
+} from "react";
 import { useTree } from "../hooks/useTree";
 import { useRequest } from "../hooks/useRequest";
 import { Company } from "../types";
+import { useSearch } from "../hooks/useSearch";
 
 interface UnitContextState {
   units: Company[] | undefined;
   unit: Company;
   setUnit: (unit: Company) => void;
   tree: any;
+  setProperty: Dispatch<SetStateAction<string>>;
+  setSearch: Dispatch<SetStateAction<string>>;
+  property: string;
 }
 
 export const UnitContext = createContext<UnitContextState>({
@@ -15,6 +25,9 @@ export const UnitContext = createContext<UnitContextState>({
   unit: {} as Company,
   setUnit: () => {},
   tree: [],
+  setProperty: () => {},
+  property: "",
+  setSearch: () => {},
 });
 
 export function UnitProvider({ children }: { children: React.ReactNode }) {
@@ -22,6 +35,9 @@ export function UnitProvider({ children }: { children: React.ReactNode }) {
   const { data: companies, request: requestCompanies } =
     useRequest<Company[]>();
   const { tree } = useTree({ companies });
+  const { filteredTree, property, setProperty, setSearch } = useSearch({
+    tree: tree?.[unit.id],
+  });
 
   useEffect(() => {
     requestCompanies("https://fake-api.tractian.com/companies");
@@ -34,7 +50,17 @@ export function UnitProvider({ children }: { children: React.ReactNode }) {
   }, [companies]);
 
   return (
-    <UnitContext.Provider value={{ units: companies, unit, setUnit, tree }}>
+    <UnitContext.Provider
+      value={{
+        units: companies,
+        unit,
+        setUnit,
+        tree: filteredTree,
+        setProperty,
+        setSearch,
+        property,
+      }}
+    >
       {children}
     </UnitContext.Provider>
   );
