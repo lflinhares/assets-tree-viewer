@@ -5,7 +5,7 @@ import Icon from "../../assets/Gold.png";
 import TractianLogo from "../../assets/logo.png";
 
 function Header() {
-  const { units, unit, setUnit } = useContext(UnitContext);
+  const { units, unit: contextUnit, setUnit } = useContext(UnitContext);
 
   return (
     <header>
@@ -17,7 +17,7 @@ function Header() {
             <button
               key={unit.id}
               className={`unit-button  ${
-                unit.id === unit.id ? "selected-unit" : ""
+                unit.id === contextUnit.id ? "selected-unit" : ""
               } `}
               onClick={() => {
                 setUnit(unit);
