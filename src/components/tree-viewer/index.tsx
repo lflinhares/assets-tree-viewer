@@ -10,6 +10,7 @@ const TreeViewer: React.FC = () => {
   return (
     <div className="tree-container">
       <Input
+        label="search"
         onChange={(value) => {
           setProperty("name");
           setSearch(value);
