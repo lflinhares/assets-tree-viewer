@@ -5,7 +5,7 @@ export function useSearch({ tree }: { tree: any | undefined }) {
   const [property, setProperty] = useState("name");
 
   function recursiveFilter(node: any, property: string, value: string): any[] {
-    if (node[property].toLowerCase().includes(value.toLowerCase())) {
+    if (node[property]?.toLowerCase().includes(value.toLowerCase())) {
       return [{ ...node }];
     }
 
@@ -29,8 +29,10 @@ export function useSearch({ tree }: { tree: any | undefined }) {
     }
     if (!search) return tree.children;
 
-    return recursiveFilter(tree, property, search);
+    const newTree = recursiveFilter(tree, property, search);
+
+    return newTree[0]?.children || [];
   }, [tree, search, property]);
 
-  return { filteredTree, setSearch, setProperty };
+  return { filteredTree, setSearch, setProperty, property };
 }
