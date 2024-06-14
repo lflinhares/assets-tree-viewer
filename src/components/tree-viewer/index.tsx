@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import Node from "../node";
+import Node, { NodeProps } from "../node";
 import { UnitContext } from "../../contexts/unitContext";
 import "./styles.css";
 import { useSearch } from "../../hooks/useSearch";
@@ -17,9 +17,11 @@ const TreeViewer: React.FC = () => {
         }}
         icon
       />
-      {tree?.map((node: any) => {
+
+      {tree?.map((node: NodeProps) => {
         return (
           <Node
+            {...node}
             id={node.id}
             key={node.id}
             children={node.children}
@@ -28,6 +30,13 @@ const TreeViewer: React.FC = () => {
           />
         );
       })}
+
+      {tree.length === 0 && (
+        <span className="no-results">
+          {" "}
+          A busca não gerou nenhum resultado.{" "}
+        </span>
+      )}
 
       {/*   {tree?.[unit.id]?.children.map((node: any) => {
         return (

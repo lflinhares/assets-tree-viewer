@@ -5,12 +5,14 @@ import LocationIcon from "../../assets/location.png";
 import { Asset, Company, Location } from "../../types";
 import "./styles.css";
 
-type NodeProps = {
+export type NodeProps = {
   children: NodeProps[];
   type: "location" | "component" | "asset" | "company";
-} & (Asset | Company | Location);
+} & Asset &
+  Company &
+  Location;
 
-function Node({ children, name, type }: NodeProps) {
+function Node({ children, name, type, status }: NodeProps) {
   const [close, setClose] = useState(false);
 
   const nodeIcon = useCallback((type: NodeProps["type"]) => {
@@ -31,6 +33,7 @@ function Node({ children, name, type }: NodeProps) {
       return node.children.map((child: any) => {
         return (
           <Node
+            {...child}
             id={child.id}
             type={child.type}
             key={child.id}
@@ -64,7 +67,12 @@ function Node({ children, name, type }: NodeProps) {
           <img className="icon" src={nodeIcon(type)} alt={type} />
         )}
 
-        <span className={type}>{name}</span>
+        <span className={type}>
+          {name}{" "}
+          {type === "component" && (
+            <span className={`status-icon ${status}`}> </span>
+          )}
+        </span>
       </div>
       {hasChildren && (
         <div

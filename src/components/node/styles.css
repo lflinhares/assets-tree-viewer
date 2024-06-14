@@ -16,9 +16,6 @@
   overflow: hidden;
 }
 
-.company {
-}
-
 .node-element {
   box-sizing: border-box;
   position: relative;
@@ -46,4 +43,19 @@
   background-color: white;
   border: none;
   outline: 0;
+}
+
+.status-icon {
+  height: 8px;
+  width: 8px;
+  border-radius: 100%;
+  display: inline-block;
+}
+
+.alert {
+  background-color: #ed3833;
+}
+
+.operating {
+  background-color: #52c41a;
 }
