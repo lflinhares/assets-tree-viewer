@@ -34,5 +34,5 @@ export function useSearch({ tree }: { tree: any | undefined }) {
     return newTree[0]?.children || [];
   }, [tree, search, property]);
 
-  return { filteredTree, setSearch, setProperty, property };
+  return { setSearch, search, setProperty, property, filteredTree };
 }

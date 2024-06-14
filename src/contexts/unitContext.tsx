@@ -18,6 +18,7 @@ interface UnitContextState {
   setProperty: Dispatch<SetStateAction<string>>;
   setSearch: Dispatch<SetStateAction<string>>;
   property: string;
+  search: string;
 }
 
 export const UnitContext = createContext<UnitContextState>({
@@ -28,6 +29,7 @@ export const UnitContext = createContext<UnitContextState>({
   setProperty: () => {},
   property: "",
   setSearch: () => {},
+  search: "",
 });
 
 export function UnitProvider({ children }: { children: React.ReactNode }) {
@@ -35,7 +37,7 @@ export function UnitProvider({ children }: { children: React.ReactNode }) {
   const { data: companies, request: requestCompanies } =
     useRequest<Company[]>();
   const { tree } = useTree({ companies });
-  const { filteredTree, property, setProperty, setSearch } = useSearch({
+  const { filteredTree, property, setProperty, search, setSearch } = useSearch({
     tree: tree?.[unit.id],
   });
 
@@ -55,6 +57,7 @@ export function UnitProvider({ children }: { children: React.ReactNode }) {
         units: companies,
         unit,
         setUnit,
+        search,
         tree: filteredTree,
         setProperty,
         setSearch,
