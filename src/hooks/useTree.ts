@@ -1,6 +1,14 @@
 import { Children, useEffect, useMemo, useState } from "react";
 import { useRequest } from "./useRequest";
-import { Asset, Company, Location } from "../types";
+import {
+  Asset,
+  Company,
+  Location,
+  AssetsDictionary,
+  TreeAsset,
+  TreeLocation,
+  TreeCompany,
+} from "../types";
 
 export function useTree({ companies }: { companies: Company[] | undefined }) {
   const { request: requestLocations } = useRequest<Location[]>();
@@ -10,20 +18,18 @@ export function useTree({ companies }: { companies: Company[] | undefined }) {
   const [loading, setLoading] = useState(false);
 
   const [locations, setLocations] = useState<Record<string, Location[]>>({});
-  const [assets, setAssets] = useState<
-    Record<string, Record<string, Asset[] | Asset>>
-  >({});
+  const [assets, setAssets] = useState<AssetsDictionary>({});
 
-  function recursiveLocation(
+  function recursiveLocationChildren(
     locations: Location[],
     location: Location,
     company: Company,
-    assets: Record<string, Record<string, Asset[] | Asset>>
+    assets: AssetsDictionary
   ) {
-    return locations.reduce((acc: any, sublocation) => {
+    return locations.reduce((acc: TreeLocation[], sublocation) => {
       if (sublocation.parentId === location.id) {
         const locationAssets = assets[company.id][sublocation.id];
-        const children = recursiveLocation(
+        const children = recursiveLocationChildren(
           locations,
           sublocation,
           company,
@@ -41,49 +47,63 @@ export function useTree({ companies }: { companies: Company[] | undefined }) {
     }, []);
   }
 
-  const tree = useMemo(() => {
+  const tree = useMemo((): Record<string, TreeCompany> | undefined => {
     if (loading) {
       return;
     }
 
     if (!companies || !locations || !assets) {
-      return [];
+      return;
     }
 
-    return companies.reduce((acc: any, company: any) => {
-      const companyLocations = locations[company.id];
+    return companies.reduce(
+      (
+        acc: Record<string, TreeCompany>,
+        company: Company
+      ): Record<string, TreeCompany> => {
+        const companyLocations = locations[company.id];
 
-      const tree = companyLocations?.reduce((acc: any, location) => {
-        if (!location.parentId) {
-          const children = [
-            ...recursiveLocation(companyLocations, location, company, assets),
-          ];
+        const tree = companyLocations?.reduce(
+          (acc: (TreeAsset | TreeLocation)[], location) => {
+            if (!location.parentId) {
+              const children = [
+                ...recursiveLocationChildren(
+                  companyLocations,
+                  location,
+                  company,
+                  assets
+                ),
+              ];
 
-          acc.push({
-            ...location,
-            type: "location",
+              acc.push({
+                ...location,
+                type: "location",
 
-            children:
-              children.length > 0
-                ? children
-                : assets[company.id][location.id] || [],
-          });
-        }
+                children:
+                  children.length > 0
+                    ? children
+                    : assets[company.id][location.id] || [],
+              });
+            }
+
+            return acc;
+          },
+          []
+        );
+
+        acc[company.id] = {
+          ...company,
+          children: [...tree, ...(assets[company.id]["none"] || [])],
+        };
 
         return acc;
-      }, []);
-
-      acc[company.id] = {
-        ...company,
-        children: [...tree, ...((assets[company.id]["none"] as Asset[]) || [])],
-      };
-
-      return acc;
-    }, {});
+      },
+      {}
+    );
   }, [loading]);
 
   function recursiveAssetsChildren(assets: Asset[], parent: Asset) {
-    return assets.reduce((acc: any, asset) => {
+    return assets.reduce((acc: TreeAsset[], asset) => {
       if (asset.id && asset.parentId === parent.id) {
         acc.push({
           ...asset,
@@ -95,38 +115,41 @@ export function useTree({ companies }: { companies: Company[] | undefined }) {
     }, []);
   }
 
-  function organizeAssets(assets: Asset[]): Record<string, Asset[] | Asset> {
-    const organizedAssets = assets.reduce((acc: any, asset) => {
-      if (asset.sensorType && !asset.parentId && !asset.locationId) {
-        if (!acc["none"]) {
-          acc["none"] = [];
-        }
-        acc["none"] = [
-          ...acc["none"],
-          {
-            ...asset,
-            type: asset.sensorType ? "component" : "asset",
-            children: recursiveAssetsChildren(assets, asset),
-          },
-        ];
-      }
-
-      if (asset.locationId) {
-        if (!acc[asset.locationId]) {
-          acc[asset.locationId] = [];
+  function organizeAssets(assets: Asset[]): Record<string, TreeAsset[]> {
+    const organizedAssets = assets.reduce(
+      (acc: Record<string, TreeAsset[]>, asset) => {
+        if (asset.sensorType && !asset.parentId && !asset.locationId) {
+          if (!acc["none"]) {
+            acc["none"] = [];
+          }
+          acc["none"] = [
+            ...acc["none"],
+            {
+              ...asset,
+              type: asset.sensorType ? "component" : "asset",
+              children: recursiveAssetsChildren(assets, asset),
+            },
+          ];
         }
 
-        acc[asset.locationId] = [
-          ...acc[asset.locationId],
-          {
-            ...asset,
-            type: asset.sensorType ? "component" : "asset",
-            children: recursiveAssetsChildren(assets, asset),
-          },
-        ];
-      }
-      return acc;
-    }, {});
+        if (asset.locationId) {
+          if (!acc[asset.locationId]) {
+            acc[asset.locationId] = [];
+          }
+
+          acc[asset.locationId] = [
+            ...acc[asset.locationId],
+            {
+              ...asset,
+              type: asset.sensorType ? "component" : "asset",
+              children: recursiveAssetsChildren(assets, asset),
+            },
+          ];
+        }
+        return acc;
+      },
+      {}
+    );
 
     return organizedAssets;
   }
